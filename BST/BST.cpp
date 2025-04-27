@@ -5,11 +5,42 @@ BinarySearchTree::BinarySearchTree(){
     root = nullptr;
 }
 
-BinarySearchTree::~BinarySearchTree(){\
-    
+BinarySearchTree::~BinarySearchTree(){
+    destroyTree(root);
+    root = nullptr;
 }
 
-void BinarySearchTree::insert( int value ){ 
+void BinarySearchTree::destroyTree(Node* node){
+    if (node == nullptr) {
+        return;
+    }
+
+    destroyTree(node->leftChild);
+    destroyTree(node->rightChild);
+    delete node;
+}
+
+BinarySearchTree::Node* BinarySearchTree::findMin(Node* node){
+   if (node == nullptr) {
+    return nullptr;
+   }
+    while (node != nullptr){
+        node = node -> leftChild;
+    }
+    return node;
+}
+
+BinarySearchTree::Node* BinarySearchTree::findMax(Node* node){
+    if (node == nullptr) {
+        return nullptr;
+       }
+    while (node != nullptr){
+        node = node -> rightChild;
+    }
+    return node;
+}
+
+void BinarySearchTree::insert(int value){ 
 Node* newNode = new Node;
 newNode -> data = value;
 newNode -> leftChild = nullptr;
@@ -31,12 +62,12 @@ while (temp != nullptr){
         return;
     }
 
-    else if ( temp -> data > value ){
+    else if ( temp -> data < value ){
         parent = temp;
         temp = temp -> rightChild;
     }
 
-    else if ( temp -> data < value ){
+    else if ( temp -> data > value ){
         parent = temp;
         temp = temp -> leftChild;
     }
@@ -51,9 +82,22 @@ while (temp != nullptr){
     }
 }
 
-void BinarySearchTree::printTree(){
-     
+
+void BinarySearchTree::InOrder(Node* node){
+    if ( node == nullptr ){
+        return;
+    }
+    InOrder(node -> leftChild);
+    std::cout << node -> data << " ";
+    InOrder(node -> rightChild);
+
 }
+
+void BinarySearchTree::printInOrder() {
+    InOrder(root);
+    std::cout << std::endl;
+}
+
 
 bool BinarySearchTree::isEmpty(){
     if ( root == nullptr ){

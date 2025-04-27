@@ -12,15 +12,21 @@ private:
 
     Node* root;
 
+    void destroyTree(Node* node);
+    Node* findMin(Node* node);
+    Node* findMax(Node* node);
+    void InOrder(Node* node);
+
 public:
 
 BinarySearchTree();
 ~BinarySearchTree();
 
-void insert ( int value );
-//void remove ( int value );
-void printTree ();
-bool isEmpty ();
+void insert(int value);
+//void remove(int value);
+void printInOrder();
+bool isEmpty();
+
 
 };
 
