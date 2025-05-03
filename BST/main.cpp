@@ -16,5 +16,11 @@ int main() {
 
     std::cout << "In-order traversal of the tree:" << std::endl;
     bst.printInOrder();  
+    bst.remove(5);
+    bst.printInOrder();  
+    bst.remove(10);
+    bst.printInOrder();  
+    bst.remove(25);
+    bst.printInOrder();  
 
 }

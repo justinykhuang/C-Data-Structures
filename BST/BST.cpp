@@ -45,6 +45,7 @@ Node* newNode = new Node;
 newNode -> data = value;
 newNode -> leftChild = nullptr;
 newNode -> rightChild = nullptr;
+newNode -> parent = nullptr;
 
 if ( root == nullptr ){
     root = newNode;
@@ -52,7 +53,7 @@ if ( root == nullptr ){
 }
 
 Node* temp = root;
-Node* parent = root;
+Node* previous = root;
 
 while (temp != nullptr){
 
@@ -63,22 +64,78 @@ while (temp != nullptr){
     }
 
     else if ( temp -> data < value ){
-        parent = temp;
+        previous = temp;
         temp = temp -> rightChild;
     }
 
     else if ( temp -> data > value ){
-        parent = temp;
+        previous = temp;
         temp = temp -> leftChild;
     }
 
 }
-    if ( parent -> data > value ){
-        parent -> leftChild = newNode;
+    if ( previous -> data > value ){
+        previous -> leftChild = newNode;
+        newNode -> parent = previous;
     }
 
-    else if ( parent -> data < value ){
-        parent -> rightChild = newNode;
+    else if ( previous -> data < value ){
+        previous -> rightChild = newNode;
+        newNode -> parent = previous;
+    }
+}
+
+BinarySearchTree::Node* BinarySearchTree::find(int value){
+    Node* temp = root;
+    while (temp != nullptr) {
+        if (temp->data == value) {
+            return temp;
+        } else if (value < temp->data) {
+            temp = temp->leftChild;
+        } else {
+            temp = temp->rightChild;
+        }
+    }
+    return nullptr; 
+}
+
+void BinarySearchTree::remove(int value){
+    Node* replace = find(value);
+    Node* replaceParent = replace -> parent;
+
+    if (replace == nullptr){
+        std::cout << "The value does not exist";
+        return;
+    }
+    
+    if (replace -> leftChild == nullptr && replace -> rightChild == nullptr){
+        if (replaceParent -> leftChild -> data == replace -> data){
+            replaceParent -> leftChild = nullptr;
+        }
+        else {
+            replaceParent -> rightChild = nullptr;
+        }
+    delete replace;    
+    }
+    else if ( replace -> leftChild != nullptr && replace -> rightChild == nullptr){
+        replaceParent -> leftChild = nullptr;
+        delete replace;
+    }
+    else if ( replace -> leftChild == nullptr && replace -> rightChild != nullptr){
+        replaceParent -> rightChild = nullptr;
+        delete replace;
+    }
+    else if (replace -> leftChild != nullptr && replace -> rightChild != nullptr ){
+    Node* temp = findMin(root -> leftChild);
+    replaceParent = temp -> parent;
+        if (replaceParent -> leftChild -> data == replace -> data){
+            replaceParent -> leftChild = nullptr;
+        }
+        else {
+            replaceParent -> rightChild = nullptr;
+        }
+    replace -> data = temp -> data;
+    delete temp;
     }
 }
 
