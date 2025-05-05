@@ -101,42 +101,96 @@ BinarySearchTree::Node* BinarySearchTree::find(int value){
 
 void BinarySearchTree::remove(int value){
     Node* replace = find(value);
-    Node* replaceParent = replace -> parent;
-
+    
     if (replace == nullptr){
         std::cout << "The value does not exist";
         return;
     }
+
+    Node* replaceParent = replace -> parent;
+    if (replaceParent != nullptr){
+        //leaf node
+        if (replace -> leftChild == nullptr && replace -> rightChild == nullptr){ 
+            if (replaceParent -> leftChild  == replace ){
+            replaceParent -> leftChild = nullptr;
+            }
+            else {
+            replaceParent -> rightChild = nullptr;
+            }
+        delete replace;   
+        return; 
+        }
+        // left child node
+        else if ( replace -> leftChild != nullptr && replace -> rightChild == nullptr){ 
+            if (replaceParent -> rightChild  == replace ){
+                replaceParent -> rightChild = replace -> leftChild;
+                }
+                else {
+                replaceParent -> leftChild = replace -> leftChild;
+                }
+            delete replace;
+            return;
+        }
+        // right child node
+        else if ( replace -> leftChild == nullptr && replace -> rightChild != nullptr){ 
+            if (replaceParent -> leftChild  == replace ){
+                replaceParent -> leftChild = replace -> rightChild;
+                }
+                else {
+                replaceParent -> rightChild = replace -> rightChild;
+                }
+            delete replace;
+            return;
+        }
+        // two children node
+        else if (replace -> leftChild != nullptr && replace -> rightChild != nullptr ){
+            Node* minNode = findMin(replace -> rightChild);
+            replaceParent = minNode -> parent;
+                if (replaceParent -> leftChild == minNode ){
+                    replaceParent -> leftChild = nullptr;
+                }
+                else {
+                    replaceParent -> rightChild = nullptr;
+                }
+            replace -> data = minNode -> data;
+            remove(minNode -> data);
+            return;
+        }  
+    }
+    if (replaceParent == nullptr) {
+        // root is a leaf
+        if (replace->leftChild == nullptr && replace->rightChild == nullptr) {
+            root = nullptr;
+            delete replace;
+            return;
+        }
     
-    if (replace -> leftChild == nullptr && replace -> rightChild == nullptr){
-        if (replaceParent -> leftChild -> data == replace -> data){
-            replaceParent -> leftChild = nullptr;
+        // root has only left child
+        if (replace->leftChild != nullptr && replace->rightChild == nullptr) {
+            root = replace->leftChild;
+            root->parent = nullptr;
+            delete replace;
+            return;
         }
-        else {
-            replaceParent -> rightChild = nullptr;
+    
+        // root has only right child
+        if (replace->leftChild == nullptr && replace->rightChild != nullptr) {
+            root = replace->rightChild;
+            root->parent = nullptr;
+            delete replace;
+            return;
         }
-    delete replace;    
-    }
-    else if ( replace -> leftChild != nullptr && replace -> rightChild == nullptr){
-        replaceParent -> leftChild = nullptr;
-        delete replace;
-    }
-    else if ( replace -> leftChild == nullptr && replace -> rightChild != nullptr){
-        replaceParent -> rightChild = nullptr;
-        delete replace;
-    }
-    else if (replace -> leftChild != nullptr && replace -> rightChild != nullptr ){
-    Node* temp = findMin(root -> leftChild);
-    replaceParent = temp -> parent;
-        if (replaceParent -> leftChild -> data == replace -> data){
-            replaceParent -> leftChild = nullptr;
+    
+        // root has two children
+        if (replace->leftChild == nullptr && replace->rightChild != nullptr) {
+        Node* minNode = findMin(replace->rightChild);
+        replace->data = minNode->data;
+        remove(minNode->data); 
+        return;
         }
-        else {
-            replaceParent -> rightChild = nullptr;
-        }
-    replace -> data = temp -> data;
-    delete temp;
     }
+    
+    
 }
 
 
