@@ -14,9 +14,9 @@ private:
 
     void destroyTree(Node* node);
     Node* findMin(Node* node);
-    Node* findMax(Node* node);
     Node* find(int data);
     void InOrder(Node* node);
+    void treeConnector(Node* parent, Node* child, Node* replaceNode);
     
 
 public:

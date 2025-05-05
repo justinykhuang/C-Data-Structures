@@ -1,15 +1,18 @@
 #include "BST.h"
 #include <iostream>
 
+//constructor
 BinarySearchTree::BinarySearchTree(){
     root = nullptr;
 }
 
+//destructor
 BinarySearchTree::~BinarySearchTree(){
     destroyTree(root);
     root = nullptr;
 }
 
+//destructor helper recursive
 void BinarySearchTree::destroyTree(Node* node){
     if (node == nullptr) {
         return;
@@ -30,16 +33,7 @@ BinarySearchTree::Node* BinarySearchTree::findMin(Node* node){
     return node;
 }
 
-BinarySearchTree::Node* BinarySearchTree::findMax(Node* node){
-    if (node == nullptr) {
-        return nullptr;
-       }
-    while (node != nullptr){
-        node = node -> rightChild;
-    }
-    return node;
-}
-
+//function to add elements into tree
 void BinarySearchTree::insert(int value){ 
 Node* newNode = new Node;
 newNode -> data = value;
@@ -84,7 +78,7 @@ while (temp != nullptr){
         newNode -> parent = previous;
     }
 }
-
+//finding the node of specified value
 BinarySearchTree::Node* BinarySearchTree::find(int value){
     Node* temp = root;
     while (temp != nullptr) {
@@ -99,6 +93,22 @@ BinarySearchTree::Node* BinarySearchTree::find(int value){
     return nullptr; 
 }
 
+void BinarySearchTree::treeConnector(Node* replace, Node* replaceParent, Node* replaceNode){
+    //handle root node case
+    if (replaceParent == nullptr){
+        root = replaceNode;
+        return;
+    }
+    //handle non-root case where parent has left child or right child 
+    if (replaceParent -> rightChild == replace){
+        replaceParent -> rightChild = replaceNode;
+    }
+    else {
+        replaceParent -> leftChild = replaceNode;
+    }
+}
+
+//handle removal of nodes based on int value
 void BinarySearchTree::remove(int value){
     Node* replace = find(value);
     
@@ -111,89 +121,65 @@ void BinarySearchTree::remove(int value){
     if (replaceParent != nullptr){
         //leaf node
         if (replace -> leftChild == nullptr && replace -> rightChild == nullptr){ 
-            if (replaceParent -> leftChild  == replace ){
-            replaceParent -> leftChild = nullptr;
-            }
-            else {
-            replaceParent -> rightChild = nullptr;
-            }
+            treeConnector(replace, replaceParent, nullptr);
         delete replace;   
         return; 
         }
         // left child node
         else if ( replace -> leftChild != nullptr && replace -> rightChild == nullptr){ 
-            if (replaceParent -> rightChild  == replace ){
-                replaceParent -> rightChild = replace -> leftChild;
-                }
-                else {
-                replaceParent -> leftChild = replace -> leftChild;
-                }
+            treeConnector(replace, replaceParent, replace -> leftChild);
             delete replace;
             return;
         }
         // right child node
         else if ( replace -> leftChild == nullptr && replace -> rightChild != nullptr){ 
-            if (replaceParent -> leftChild  == replace ){
-                replaceParent -> leftChild = replace -> rightChild;
-                }
-                else {
-                replaceParent -> rightChild = replace -> rightChild;
-                }
+            treeConnector(replace, replaceParent, replace -> rightChild);
             delete replace;
             return;
         }
         // two children node
         else if (replace -> leftChild != nullptr && replace -> rightChild != nullptr ){
             Node* minNode = findMin(replace -> rightChild);
-            replaceParent = minNode -> parent;
-                if (replaceParent -> leftChild == minNode ){
-                    replaceParent -> leftChild = nullptr;
-                }
-                else {
-                    replaceParent -> rightChild = nullptr;
-                }
             replace -> data = minNode -> data;
             remove(minNode -> data);
             return;
         }  
     }
+
     if (replaceParent == nullptr) {
         // root is a leaf
-        if (replace->leftChild == nullptr && replace->rightChild == nullptr) {
-            root = nullptr;
-            delete replace;
-            return;
-        }
-    
-        // root has only left child
-        if (replace->leftChild != nullptr && replace->rightChild == nullptr) {
-            root = replace->leftChild;
-            root->parent = nullptr;
-            delete replace;
-            return;
-        }
-    
-        // root has only right child
-        if (replace->leftChild == nullptr && replace->rightChild != nullptr) {
-            root = replace->rightChild;
-            root->parent = nullptr;
-            delete replace;
-            return;
-        }
-    
-        // root has two children
-        if (replace->leftChild == nullptr && replace->rightChild != nullptr) {
-        Node* minNode = findMin(replace->rightChild);
-        replace->data = minNode->data;
-        remove(minNode->data); 
+        treeConnector(replace, replaceParent, nullptr);
+        delete replace;
         return;
-        }
     }
     
+    // root has only left child
+    if (replace->leftChild != nullptr && replace->rightChild == nullptr) {
+        root = replace->leftChild;
+        root->parent = nullptr;
+        delete replace;
+        return;
+    }
     
-}
+    // root has only right child
+    if (replace->leftChild == nullptr && replace->rightChild != nullptr) {
+        root = replace->rightChild;
+        root->parent = nullptr;
+        delete replace;
+        return;
+    }
+    
+    // root has two children
+    if (replace->leftChild != nullptr && replace->rightChild != nullptr) {
+    Node* minNode = findMin(replace->rightChild);
+    replace->data = minNode->data;
+    remove(minNode->data); 
+    return;
+     }
+}   
 
 
+//prints the BST in-order
 void BinarySearchTree::InOrder(Node* node){
     if ( node == nullptr ){
         return;
@@ -204,6 +190,7 @@ void BinarySearchTree::InOrder(Node* node){
 
 }
 
+//funcion call without input
 void BinarySearchTree::printInOrder() {
     InOrder(root);
     std::cout << std::endl;
